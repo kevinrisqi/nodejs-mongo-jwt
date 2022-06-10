@@ -25,8 +25,10 @@ const insertUser = async (req, res, next) => {
     });
 
     try {
-        const savedUser = await user.save();
-        res.send(201, savedUser);
+        await user.save();
+        res.send(201, {
+            user: user._id,
+        });
         next();
     } catch (error) {
         res.send(400, error);

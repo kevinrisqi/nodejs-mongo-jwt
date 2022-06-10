@@ -2,6 +2,7 @@ const restify = require('restify');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userController = require('./controllers/userController');
+const authController = require('./controllers/authController');
 
 // Init dotenv
 dotenv.config();
@@ -25,6 +26,7 @@ server.use(restify.plugins.bodyParser());
 
 // Routes
 server.post('/api/user/register', userController.insertUser)
+server.post('/api/login', authController.login)
 
 
 server.listen(3000, function () {
