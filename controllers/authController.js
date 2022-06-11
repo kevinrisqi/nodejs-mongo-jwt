@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const validation = require('../validation');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 
 const login = async (req, res, next) => {
     const {error, value} = validation.loginValidation(req.body);
@@ -13,11 +15,30 @@ const login = async (req, res, next) => {
     const validPass = await bcrypt.compare(req.body.password, user.password);
     if (!validPass) return res.send(400, 'Invalid email or password');
 
-    res.send(200, 'Logged In');
+    const token = jwt.sign({_id: user._id, name: user.name}, process.env.TOKEN_SECRET)
+    res.header('auth-token', token)
 
-    next()
+    res.send(200, token);
+
+    next();
+}
+
+const verifyToken = async (req, res, next) => {
+    const token = req.header('auth-token');
+    // console.log(token)
+    if (!token) return res.send(401, 'Access Denied');
+
+    try {
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        req.user = verified;
+        // res.send('Authorized')
+        next()
+    } catch (error) {
+        res.send(400, 'Invalid Token')
+    }
 }
 
 module.exports = {
-    login
+    login,
+    verifyToken
 }

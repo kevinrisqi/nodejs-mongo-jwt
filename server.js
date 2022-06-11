@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userController = require('./controllers/userController');
 const authController = require('./controllers/authController');
+const postController = require('./controllers/postController');
+const verify = require('./controllers/authController');
 
 // Init dotenv
 dotenv.config();
@@ -26,8 +28,8 @@ server.use(restify.plugins.bodyParser());
 
 // Routes
 server.post('/api/user/register', userController.insertUser)
-server.post('/api/login', authController.login)
-
+server.post('/api/login', authController.login);
+server.get('/api/', verify.verifyToken, postController.getPost);
 
 server.listen(3000, function () {
     console.log('%s listening at %s', server.name, server.url);
